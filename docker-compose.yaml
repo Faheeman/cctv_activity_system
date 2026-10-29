@@ -1,0 +1,51 @@
+version: "3.9"
+
+services:
+  cctv-activity-engine:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: cctv-activity-system:1.0.0
+    container_name: cctv-activity-engine
+    restart: unless-stopped
+    ports:
+      - "${AI_BACKEND_PORT:-8081}:8081"
+    volumes:
+      - ./config:/app/config:ro
+      - ./models:/app/models:ro
+      - ./outputs:/app/outputs
+    environment:
+      - AI_BACKEND_HOST=0.0.0.0
+      - AI_BACKEND_PORT=8081
+      - AI_DEVICE=${AI_DEVICE:-cpu}
+      - AI_MODEL_PATH=${AI_MODEL_PATH:-models/yolov8n-pose.onnx}
+      - AI_LOG_LEVEL=${AI_LOG_LEVEL:-INFO}
+      - OMP_NUM_THREADS=2
+      - IURIS_DELIVERY_ENABLED=${IURIS_DELIVERY_ENABLED:-false}
+      # IMPORTANT: When communicating with an IURIS container on the same Docker network,
+      # set IURIS_BASE_URL to the container service name (e.g. http://iuris-api:8080),
+      # never http://localhost, which refers to the cctv-activity-engine container itself.
+      - IURIS_BASE_URL=${IURIS_BASE_URL:-}
+      - IURIS_EVENTS_PATH=${IURIS_EVENTS_PATH:-/api/v1/cctv/events}
+      - IURIS_API_TOKEN=${IURIS_API_TOKEN:-}
+      - EVENT_QUEUE_MAX_SIZE=${EVENT_QUEUE_MAX_SIZE:-1000}
+      - EVENT_RETRY_MAX_ATTEMPTS=${EVENT_RETRY_MAX_ATTEMPTS:-8}
+      - ACTIVITY_WINDOW_SECONDS=${ACTIVITY_WINDOW_SECONDS:-10}
+      - ACTIVITY_MIN_CONFIDENCE=${ACTIVITY_MIN_CONFIDENCE:-0.50}
+      - RISK_RULES_PATH=${RISK_RULES_PATH:-config/risk_rules.yaml}
+    networks:
+      - iuris-bridge
+    deploy:
+      resources:
+        limits:
+          cpus: "2.0"
+          memory: 2G
+    healthcheck:
+      test: ["CMD", "python3", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8081/health')"]
+      interval: 15s
+      timeout: 5s
+      retries: 3
+
+networks:
+  iuris-bridge:
+    driver: bridge

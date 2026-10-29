@@ -1,0 +1,108 @@
+system:
+  app_name: "cctv-activity-recognition"
+  log_level: "INFO"
+  enable_api: false
+  api_host: "127.0.0.1"
+  api_port: 8000
+
+cameras:
+  - camera_id: "cam_corridor_01"
+    camera_name: "Academic Building Corridor 01"
+    source_type: "file"
+    source_uri: "tests/fixtures/sample_cctv.avi"
+    enabled: true
+    sample_every_n_frames: 1
+    target_fps: 15.0
+    max_frame_queue_size: 1
+    resize_width: 640
+    resize_height: 480
+    connection_timeout_ms: 5000
+    read_timeout_ms: 5000
+    reconnect_initial_delay_sec: 0.5
+    reconnect_max_delay_sec: 8.0
+    reconnect_backoff_factor: 2.0
+    reconnect_jitter_ratio: 0.0
+    max_reconnect_attempts: 5
+    stale_frame_timeout_sec: 5.0
+
+pose:
+  backend: "synthetic"
+  model_path: "models/yolov8n-pose.onnx"
+  model_version: "yolov8n-pose-1.0"
+  device: "cpu"
+  imgsz: 640
+  min_person_confidence: 0.50
+  min_keypoint_confidence: 0.35
+  iou_threshold: 0.45
+  cpu_threads: 2
+  allow_synthetic_fallback: true
+
+tracker:
+  high_thresh: 0.60
+  low_thresh: 0.25
+  match_iou_thresh: 0.30
+  second_match_iou_thresh: 0.20
+  min_hits_to_confirm: 2
+  track_expiration_seconds: 2.0
+  max_window_duration_seconds: 1.5
+  max_window_observations: 60
+
+activity:
+  classifier_type: "heuristic"
+  model_version: "heuristic-kinematic-v1.0"
+  min_observations: 6
+  min_window_duration_seconds: 0.50
+  standing_min_duration_seconds: 0.60
+  standing_max_speed_bh_per_sec: 0.35
+  walking_min_speed_bh_per_sec: 0.35
+  running_min_speed_bh_per_sec: 1.80
+  standing_max_ankle_std_bh: 0.035
+  walking_min_ankle_std_bh: 0.025
+  running_min_ankle_std_bh: 0.055
+  sitting_max_hip_knee_ratio: 0.22
+  sitting_min_aspect_ratio: 0.52
+  lying_min_aspect_ratio: 1.15
+  lying_min_duration_seconds: 0.60
+  fall_min_downward_velocity_bh_per_sec: 0.80
+  fall_min_height_drop_ratio: 0.25
+  fall_max_transition_seconds: 1.50
+  hysteresis_count: 3
+  camera_viewpoint: "cctv"
+  cctv_foreshortening_factor: 1.25
+
+summary:
+  window_seconds: 10.0
+  exclude_unknown_from_percentages: false
+  max_history_per_camera: 200
+
+risk:
+  enabled: true
+  rules_path: "config/risk_rules.yaml"
+
+iuris:
+  delivery_enabled: false
+  dry_run: false
+  base_url: ""
+  events_path: "/api/v1/cctv/events"
+  api_token: ""
+  auth_scheme: "bearer"
+  timeout_seconds: 5.0
+  max_queue_size: 1000
+  max_retry_attempts: 8
+  backpressure_policy: "dead_letter_and_drop_oldest"
+  dead_letter_path: "outputs/iuris_dead_letter.jsonl"
+  deliver_activity_events: true
+  deliver_summary_events: true
+  deliver_risk_events: true
+
+storage:
+  max_activity_history: 1000
+  max_summary_history: 500
+  max_risk_history: 500
+
+renderer:
+  draw_bbox: true
+  draw_skeleton: true
+  draw_track_id: true
+  draw_activity: true
+  draw_telemetry: true

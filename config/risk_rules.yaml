@@ -1,0 +1,70 @@
+# Configurable Operational Risk Assessment Rules
+# Note: Severity categories (INFO, LOW, MEDIUM, HIGH, CRITICAL) are operational classifications
+# for human operator review, not validated probabilities of danger or intent.
+
+rules:
+  unusual_running_concentration:
+    enabled: true
+    activity: RUNNING
+    percentage_threshold: 40.0
+    minimum_people: 5
+    window_seconds: 10.0
+    minimum_duration_seconds: 5.0
+    min_observation_quality: 0.45
+    clear_grace_seconds: 1.5
+    emit_resolved_events: true
+    severity: MEDIUM
+    cooldown_seconds: 10.0
+    camera_overrides:
+      cam_north_gate:
+        minimum_people: 6
+        percentage_threshold: 50.0
+        minimum_duration_seconds: 5.0
+        severity: HIGH
+
+  possible_fall:
+    enabled: true
+    minimum_duration_seconds: 0.40
+    min_observation_quality: 0.50
+    clear_grace_seconds: 1.5
+    severity: HIGH
+    cooldown_seconds: 10.0
+
+  prolonged_immobility:
+    enabled: true
+    activity: LYING
+    immobility_duration_seconds: 10.0
+    min_observation_quality: 0.50
+    clear_grace_seconds: 2.0
+    severity: HIGH
+    cooldown_seconds: 15.0
+
+  persistent_patterns:
+    - pattern_id: "sustained_corridor_running"
+      camera_id: "cam_corridor_01"
+      enabled: true
+      activity: RUNNING
+      minimum_people: 3
+      minimum_duration_seconds: 8.0
+      min_observation_quality: 0.50
+      severity: MEDIUM
+      cooldown_seconds: 15.0
+
+  zones:
+    - zone_id: "zone_restricted_corridor_01"
+      camera_id: "cam_corridor_01"
+      name: "Restricted Corridor Perimeter"
+      enabled: false
+      polygon:
+        - [50.0, 50.0]
+        - [590.0, 50.0]
+        - [590.0, 430.0]
+        - [50.0, 430.0]
+      trigger_activities:
+        - RUNNING
+        - FALLING
+        - LYING
+      minimum_duration_seconds: 1.0
+      min_observation_quality: 0.45
+      severity: MEDIUM
+      cooldown_seconds: 10.0

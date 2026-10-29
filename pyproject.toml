@@ -1,0 +1,40 @@
+[build-system]
+requires = ["setuptools>=61.0"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "activity-system"
+version = "1.0.0"
+description = "Real-time CCTV human pose estimation, multi-person tracking, and temporal activity recognition"
+readme = "README.md"
+requires-python = ">=3.10"
+license = {text = "Proprietary / Internal"}
+dependencies = [
+    "numpy>=1.24.0",
+    "scipy>=1.10.0",
+    "opencv-python-headless>=4.8.0,<5.0.0",
+    "pydantic>=1.10.4,<2.0.0",
+    "PyYAML>=6.0",
+    "onnxruntime>=1.16.0",
+]
+
+[project.optional-dependencies]
+yolo = [
+    "ultralytics>=8.2.0",
+]
+api = [
+    "fastapi>=0.92.0,<1.0.0",
+    "starlette>=0.26.0",
+    "uvicorn>=0.17.6",
+    "httpx>=0.23.0",
+]
+dev = [
+    "pytest>=7.4.0",
+]
+
+[tool.setuptools.packages.find]
+where = ["src"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["src"]

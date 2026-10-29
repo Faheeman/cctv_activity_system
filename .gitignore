@@ -1,0 +1,33 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging
+build/
+dist/
+*.egg-info/
+
+# Virtual environments
+.venv/
+venv/
+env/
+
+# Model weights and artifacts (keep outside git)
+models/*.pt
+models/*.onnx
+models/*.engine
+
+# Generated video outputs and test artifacts
+outputs/
+*.mp4
+*.avi
+!tests/fixtures/*.mp4
+
+# Environment variables and secrets
+.env
+*.local.yaml
+
+# Pytest / coverage
+.pytest_cache/
+.coverage
