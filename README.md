@@ -1,6 +1,8 @@
 # Pose Estimation Activity System
 A modular, production-oriented computer vision and activity intelligence backend for live RTSP cameras, USB/integrated webcams, and prerecorded video files. 
-##The backend performs 
+<img width="2591" height="1439" alt="Gemini_Generated_Image_c75orec75orec75o" src="https://github.com/user-attachments/assets/f542fdfc-1c40-42d4-bbc8-ac2d84ef690a" />
+
+## The backend performs 
 Single-pass 17-keypoint COCO human pose estimation, per-camera ByteTrack multi-person tracking, temporal activity recognition, deduplicated camera-level activity summaries, independent configurable risk assessment, versioned `/v1/*` REST API exposure.
 
 ## Installation & Quick Start
